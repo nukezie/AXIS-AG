@@ -1,0 +1,81 @@
+version: 2025.08.0
+phases:
+  - id: DOC-PHASE-00
+    file: /docs/phases/phase-00_bootstrap.md
+    title: Bootstrap & CI
+    depends_on: []
+    produces:
+      docs: [/docs/ADR/0001-repo-architecture.md, /docs/runbooks/local_dev.md]
+      code: [/apps/api, /apps/ui, /packages/*, /docs/TOC.md, /docs/GLOSSARY.md]
+    status: draft
+    owner: Platform Eng
+
+  - id: DOC-PHASE-01
+    file: /docs/phases/phase-01_contracts_streaming.md
+    title: Contracts & Streaming
+    depends_on: [DOC-CORE-ARCH-OVERVIEW, DOC-API-EVENT-MODEL]
+    produces:
+      docs: [/docs/contracts/*.md]
+      code: [/packages/contracts, /apps/api/app/main.py, /apps/ui/src/features/console/RunConsole.tsx]
+    status: draft
+    owner: Platform Eng
+
+  - id: DOC-PHASE-02
+    file: /docs/phases/phase-02_controllers_v1.md
+    title: Controllers v1 (Baseline)
+    depends_on: [DOC-CORE-CONTROL-PLANE, DOC-CTRL-BUDGETER, DOC-CTRL-MECO, DOC-CTRL-PLANNER, DOC-CTRL-MVR, DOC-CTRL-VERIFIER, DOC-CTRL-TASK-ORCH, DOC-TOOL-REGISTRY]
+    produces:
+      docs: []
+      code: [/packages/controllers/*_v1.py, /packages/tooling/*, /apps/api/app/control.py]
+    status: draft
+    owner: Reasoning Guild
+
+  - id: DOC-PHASE-03
+    file: /docs/phases/phase-03_controllers_v2_sota.md
+    title: Controllers v2 (TTC, Search-Aware, SVS/MVR v2) + Adapters
+    depends_on: [DOC-CTRL-BUDGETER, DOC-CTRL-PLANNER, DOC-CTRL-MVR, DOC-ADAPT-LANGGRAPH, DOC-ADAPT-OPENAI]
+    produces:
+      docs: [/docs/policy_bundle/2025.08-matrix-v3.2.yaml]
+      code: [/packages/controllers/*_v2.py, /packages/adapters/*_adapter.py]
+    status: draft
+    owner: Reasoning Guild
+
+  - id: DOC-PHASE-04
+    file: /docs/phases/phase-04_ui_operator_v2.md
+    title: Operator UI v2 (Five-Axis Control)
+    depends_on: [DOC-UI-MATRIX-DASH, DOC-UI-GRAPH-VIEW, DOC-UI-BUDGET-PANEL, DOC-UI-VERIFIER-PANEL, DOC-UI-TOOL-CATALOG, DOC-API-EVENT-MODEL]
+    produces:
+      docs: []
+      code: [/apps/ui/src/features/{matrix,graph,budget,verifier,tools}/*]
+    status: draft
+    owner: UX Eng
+
+  - id: DOC-PHASE-05
+    file: /docs/phases/phase-05_eval_governance.md
+    title: Evaluation & Governance
+    depends_on: [DOC-EVAL-METRICS, DOC-EVAL-REGRESSION, DOC-EVAL-CICD, DOC-VERI-UNIFIED]
+    produces:
+      docs: [/docs/eval/regression_pack_doc.md, /docs/eval/cicd_gates_doc.md]
+      code: [/.github/workflows/eval.yml, /docs/regression_pack/*.json]
+    status: draft
+    owner: MLOps
+
+  - id: DOC-PHASE-06
+    file: /docs/phases/phase-06_security_trism.md
+    title: Security, TRiSM & Incident Mode
+    depends_on: [DOC-SEC-THREAT, DOC-SEC-REDACTION, DOC-SEC-INCIDENT, DOC-TOOL-SANDBOX]
+    produces:
+      docs: [/docs/security/threat_model.md, /docs/security/incident_mode_spec.md]
+      code: [/apps/api/app/security/*, /packages/tooling/sandbox.py]
+    status: draft
+    owner: Security Eng
+
+  - id: DOC-PHASE-07
+    file: /docs/phases/phase-07_deployment_sre.md
+    title: Deployment & SRE
+    depends_on: [DOC-OPS-DEPLOY, DOC-OPS-OBS, DOC-OPS-RUNBOOK]
+    produces:
+      docs: [/docs/ops/sre_runbook.md]
+      code: [/infrastructure/docker/*, /infrastructure/k8s/*, /infrastructure/helm/*]
+    status: draft
+    owner: SRE
