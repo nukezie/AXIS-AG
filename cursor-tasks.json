@@ -1,0 +1,172 @@
+{
+  "version": "1.0",
+  "project": "AXIOM-25 Matrix AI Agent Architecture",
+  "description": "Multi-axis, engine-agnostic agent system with budgeted reasoning and verification",
+  "tasks": [
+    {
+      "id": "phase-00-bootstrap",
+      "title": "Phase 00 — Bootstrap & CI",
+      "docs": ["/docs/phases/phase-00_bootstrap.md"],
+      "dependsOn": [],
+      "commands": [
+        "pnpm init -y && pnpm -w add -D typescript eslint prettier",
+        "uv init && uv add fastapi pydantic",
+        "write /docs/ADR/0001-repo-architecture.md from template in doc"
+      ],
+      "acceptance": [
+        "pnpm -w lint && pnpm -w typecheck && pnpm -w build passes",
+        "CI runs on PR and blocks on failures",
+        "All artifacts exist with front-matter"
+      ]
+    },
+    {
+      "id": "phase-01-contracts-streaming",
+      "title": "Phase 01 — Contracts & Streaming",
+      "docs": ["/docs/phases/phase-01_contracts_streaming.md", "/docs/api/event_model.md"],
+      "dependsOn": ["phase-00-bootstrap"],
+      "commands": [
+        "generate Pydantic models & TS types per /docs/contracts/*.md",
+        "implement FastAPI SSE endpoints per spec",
+        "create RunConsole.tsx SSE client"
+      ],
+      "acceptance": [
+        "POST /runs returns run_id; UI streams events for that run",
+        "Schemas validated in CI; versions logged"
+      ]
+    },
+    {
+      "id": "phase-02-controllers-v1",
+      "title": "Phase 02 — Controllers v1 (Baseline)",
+      "docs": ["/docs/phases/phase-02_controllers_v1.md"],
+      "dependsOn": ["phase-01-contracts-streaming"],
+      "commands": [
+        "implement ControlPlane wiring",
+        "build Tool Registry + MVR preflight",
+        "create receipt storage system",
+        "add demo tools: web_search, calculator, sql_query"
+      ],
+      "acceptance": [
+        "Untrusted tools blocked without preflight",
+        "Receipts exist for each call; schema/citation checks run"
+      ]
+    },
+    {
+      "id": "phase-03-controllers-v2-sota",
+      "title": "Phase 03 — Controllers v2 (TTC, Search-Aware, SVS/MVR v2) + Adapters",
+      "docs": ["/docs/phases/phase-03_controllers_v2_sota.md"],
+      "dependsOn": ["phase-02-controllers-v1"],
+      "commands": [
+        "implement dynamic TTC with early-stop",
+        "add search-aware planning with PRM scoring",
+        "build SVS (k=3) + bounded reflection",
+        "create LangGraph and OpenAI adapters"
+      ],
+      "acceptance": [
+        "Accuracy@SLA ↑ vs v1; cost/solve bounded",
+        "Engines produce comparable outcomes on regression pack"
+      ]
+    },
+    {
+      "id": "phase-04-ui-operator-v2",
+      "title": "Phase 04 — Operator UI v2 (Five-Axis Control)",
+      "docs": ["/docs/phases/phase-04_ui_operator_v2.md"],
+      "dependsOn": ["phase-03-controllers-v2-sota"],
+      "commands": [
+        "build Matrix Dashboard with KPIs & toggles",
+        "create Graph View with node inspector",
+        "implement Budget/Verifier Panels",
+        "add Tool Catalog with MVR preflight"
+      ],
+      "acceptance": [
+        "Operator changes policies live; impacts runs",
+        "Receipts accessible from nodes"
+      ]
+    },
+    {
+      "id": "phase-05-eval-governance",
+      "title": "Phase 05 — Evaluation & Governance",
+      "docs": ["/docs/phases/phase-05_eval_governance.md"],
+      "dependsOn": ["phase-04-ui-operator-v2"],
+      "commands": [
+        "define KPI thresholds and budgets per domain",
+        "implement PR gate (short set) and nightly job (full set)",
+        "publish artifacts; export to Grafana dashboards"
+      ],
+      "acceptance": [
+        "PRs block on regressions",
+        "Nightly publishes reports"
+      ]
+    },
+    {
+      "id": "phase-06-security-trism",
+      "title": "Phase 06 — Security, TRiSM & Incident Mode",
+      "docs": ["/docs/phases/phase-06_security_trism.md"],
+      "dependsOn": ["phase-05-eval-governance"],
+      "commands": [
+        "implement redaction in events/receipts",
+        "build sandboxed code execution",
+        "add incident mode switches",
+        "create security audit trails"
+      ],
+      "acceptance": [
+        "Redaction unit tests green",
+        "Sandbox blocks dangerous ops",
+        "Incident toggle works"
+      ]
+    },
+    {
+      "id": "phase-07-deployment-sre",
+      "title": "Phase 07 — Deployment & SRE",
+      "docs": ["/docs/phases/phase-07_deployment_sre.md"],
+      "dependsOn": ["phase-06-security-trism"],
+      "commands": [
+        "create multi-stage Docker builds",
+        "deploy with k8s + HPA",
+        "setup OTel traces + Prom metrics",
+        "implement blue/green release strategy"
+      ],
+      "acceptance": [
+        "Autoscaling passes load test",
+        "Alerts fire correctly",
+        "Rollback succeeds"
+      ]
+    }
+  ],
+  "dependencies": {
+    "core-docs": [
+      "DOC-CORE-ARCH-OVERVIEW",
+      "DOC-CORE-FIVE-AXIS", 
+      "DOC-CORE-CONTROL-PLANE",
+      "DOC-CORE-ENGINE-ADAPTER"
+    ],
+    "controller-docs": [
+      "DOC-CTRL-BUDGETER",
+      "DOC-CTRL-MECO",
+      "DOC-CTRL-PLANNER", 
+      "DOC-CTRL-MVR",
+      "DOC-CTRL-VERIFIER",
+      "DOC-CTRL-TASK-ORCH"
+    ],
+    "contract-docs": [
+      "DOC-CONTRACTS-TASKSPEC",
+      "DOC-CONTRACTS-BUDGET",
+      "DOC-CONTRACTS-VERIFY",
+      "DOC-CONTRACTS-TOOLSPEC",
+      "DOC-CONTRACTS-RUNEVENT"
+    ],
+    "ui-docs": [
+      "DOC-UI-MATRIX-DASH",
+      "DOC-UI-GRAPH-VIEW",
+      "DOC-UI-RUN-CONSOLE",
+      "DOC-UI-BUDGET-PANEL",
+      "DOC-UI-VERIFIER-PANEL",
+      "DOC-UI-TOOL-CATALOG"
+    ]
+  },
+  "conventions": {
+    "doc-linking": "Always use Doc ID + absolute path: [Control Plane (DOC-CORE-CONTROL-PLANE)](/docs/core/control_plane_spec.md)",
+    "anchors": "Use standard anchors: #objective #scope #inputs #dependencies #artifacts #steps #acceptance #kpis #risks #rollback #links",
+    "front-matter": "Every doc must have front-matter with id, title, owner, status, version, depends_on",
+    "acceptance": "Every task ends with Acceptance & Traceability listing exact files to exist, tests to run, and Doc IDs referenced"
+  }
+}
