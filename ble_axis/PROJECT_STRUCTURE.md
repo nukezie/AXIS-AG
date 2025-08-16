@@ -19,7 +19,12 @@ ble_axis/
 │   └── architecture.md         # Firmware architecture and software design
 ├── pcb/                        # PCB design files (to be developed)
 ├── enclosure/                  # Mechanical design files (to be developed)
-├── software/                   # PC-side software (to be developed)
+├── software/                   # PC-side software and MICS identification system
+│   ├── README.md              # Software overview and usage guide
+│   ├── requirements.txt       # Python dependencies
+│   ├── mics_device_identification.py  # MICS device identification system
+│   ├── mics_device_database.json     # Device database with MAC addresses
+│   └── test_mics_identification.py   # Test suite and examples
 └── testing/                    # Testing procedures and validation
     └── test_plan.md           # Comprehensive testing and validation plan
 ```
@@ -167,7 +172,7 @@ ble_axis/
 ### Pending Development
 - [ ] pcb/ - PCB design files
 - [ ] enclosure/ - Mechanical design files
-- [ ] software/ - PC-side software
+- [x] software/ - PC-side software and MICS identification system
 - [ ] Additional firmware source code
 - [ ] Hardware schematics and layouts
 - [ ] Mechanical CAD files
